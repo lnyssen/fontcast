@@ -51,6 +51,9 @@ const config = {
     attribution: "Air quality: Open-Meteo.com, CAMS European air quality forecast (CC BY 4.0)",
   },
 
+  // Poster No. 001 is this day (Brussels date). Each day after adds one.
+  firstDay: "2026-11-14",
+
   // When the poster should say "data is old" (hours since the last good reading).
   staleAfterHours: 3,
 

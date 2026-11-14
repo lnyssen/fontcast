@@ -15,7 +15,7 @@ import { NB, nf, card, hhmm, esc, clean, readableOpacity } from "./utils.js";
 /*
   W     the weather: { hour, sunrise, sunset (decimal hours, Brussels time),
         temp, rain, wind, dir, pm, cloud, pres, hum }
-  opts  { lines: ["{weather}"], ranges, date: Date, timezone,
+  opts  { lines: ["{weather}"], ranges, date: Date, timezone, firstDay: "2026-11-14",
           footer: "text at the bottom right" }
 */
 export function poster(W, opts) {
@@ -26,7 +26,9 @@ export function poster(W, opts) {
   // Day of the year and the date, in Brussels time
   const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
   const [y, m, d] = ymd.split("-").map(Number);
-  const doy = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 0)) / 864e5);
+  // Poster number: No. 001 is the first day (config.firstDay), then +1 per day
+  const [fy, fm, fd] = (opts.firstDay || ymd).split("-").map(Number);
+  const no = Math.max(1, Math.round((Date.UTC(y, m - 1, d) - Date.UTC(fy, fm - 1, fd)) / 864e5) + 1);
   const dateStr = now.toLocaleDateString("en-GB", { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   // "{weather}" in a line is replaced by the word for the current weather
@@ -53,7 +55,7 @@ export function poster(W, opts) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1414" width="1000" height="1414">` +
     background(W, K) +
     `<text x="70" y="92" ${mono} font-size="17" letter-spacing="2.5">FONTCAST · BRUSSELS</text>` +
-    `<text x="930" y="92" ${mono} font-size="17" letter-spacing="2.5" text-anchor="end">No.${NB}${String(doy).padStart(3, "0")} · ${hhmm(W.hour)}</text>` +
+    `<text x="930" y="92" ${mono} font-size="17" letter-spacing="2.5" text-anchor="end">No.${NB}${String(no).padStart(3, "0")} · ${hhmm(W.hour)}</text>` +
     `<line x1="70" x2="930" y1="112" y2="112" stroke="${ink}" stroke-width="1.2"/>` +
     main.svg +
     `<line x1="70" x2="930" y1="840" y2="840" stroke="${ink}" stroke-width="1.2"/>` +

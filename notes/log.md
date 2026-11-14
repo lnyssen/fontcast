@@ -54,3 +54,7 @@
 - `config.text` is `["{weather}"]`; `src/words.js` picks the word: rain first, then wind, pollution, frost, heat, fog, cold, clouds, clear sky (day or night).
 - Each condition has a few words; the date picks one, so the word is stable all day while the weather holds.
 - Rain thresholds (0.5 and 4 mm) depend on the precipitation unit, still to verify on a rainy day.
+
+## 2026-11-14 · Poster number and home links
+- Posters are numbered from the first day: 2026-11-14 is No. 001 (`config.firstDay`), no longer the day of the year.
+- The home page shows two links under the poster: Archive and Data. The data page links back to both.
