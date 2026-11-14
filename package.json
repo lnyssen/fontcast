@@ -1,0 +1,10 @@
+{
+  "name": "fontcast",
+  "private": true,
+  "description": "A live typographic poster for Brussels, shaped by the weather and the air.",
+  "type": "module",
+  "scripts": {
+    "fetch": "node scripts/fetch-data.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

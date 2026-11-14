@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fontcast · data check</title>
+<style>
+  /* Plain debug page: raw values, their source and their age. */
+  :root { --bg:#16171a; --line:#2e3137; --txt:#e9e7e1; --mute:#8d9099; --warn:#f2c27c; --bad:#ff8a7a; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.5 ui-monospace, "IBM Plex Mono", Menlo, monospace; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 14px; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 4px; }
+  h2 { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin: 32px 0 8px; font-weight: 500; }
+  p { margin: 4px 0; }
+  .mute { color: var(--mute); }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 7px 0; border-top: 1px solid var(--line); vertical-align: top; }
+  td:first-child { color: var(--mute); width: 46%; padding-right: 12px; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .badge { display: inline-block; padding: 1px 8px; border-radius: 3px; border: 1px solid currentColor; font-size: 12px; }
+  .ok { color: #9fd49b; } .warn { color: var(--warn); } .bad { color: var(--bad); }
+  ul { padding-left: 18px; margin: 6px 0; }
+  a { color: inherit; }
+  code { color: var(--mute); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fontcast · data check</h1>
+  <p class="mute">Raw values read from <code>data/latest.json</code>, refreshed every hour. Times are Brussels time.</p>
+  <p id="status" style="margin-top:12px">Loading…</p>
+
+  <h2>Weather</h2>
+  <table id="weather"></table>
+
+  <h2>Air</h2>
+  <table id="air"></table>
+
+  <h2>Problems</h2>
+  <div id="problems" class="mute">None.</div>
+
+  <h2>Compare with</h2>
+  <ul class="mute">
+    <li><a href="https://www.meteo.be/en" target="_blank" rel="noopener">RMI, Belgian weather service (meteo.be)</a></li>
+    <li><a href="https://www.irceline.be/en" target="_blank" rel="noopener">IRCEL-CELINE, live air quality map</a></li>
+    <li><a href="https://geo.irceline.be/sos/api/v1/timeseries/100034" target="_blank" rel="noopener">IRCEL-CELINE raw value, station 41REG1</a></li>
+  </ul>
+</main>
+
+<script type="module">
+import config from "./config.js";
+
+const $ = (s) => document.querySelector(s);
+const tz = config.place.timezone;
+
+// "14 Nov, 11:20" in Brussels time
+const when = (iso) => iso
+  ? new Date(iso).toLocaleString("en-GB", { timeZone: tz, day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
+  : "–";
+// "35 min ago", "4.2 h ago"
+const ago = (iso) => {
+  const min = (Date.now() - new Date(iso)) / 60000;
+  return min < 90 ? `${Math.round(min)} min ago` : `${(min / 60).toFixed(1)} h ago`;
+};
+const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const row = (label, value) => `<tr><td>${label}</td><td class="num">${value}</td></tr>`;
+
+// Friendly labels for the Open-Meteo variable names
+const LABELS = {
+  temperature_2m: "Temperature",
+  precipitation: "Precipitation",
+  wind_speed_10m: "Wind speed",
+  wind_direction_10m: "Wind from",
+  cloud_cover: "Cloud cover",
+  pressure_msl: "Air pressure (sea level)",
+  is_day: "Daylight (1 = day, 0 = night)",
+};
+
+try {
+  // no-store: always ask for the newest file, never a cached copy
+  const res = await fetch("data/latest.json", { cache: "no-store" });
+  if (!res.ok) throw new Error(`data/latest.json not found (HTTP ${res.status}). The hourly job has not run yet.`);
+  const d = await res.json();
+
+  // Overall freshness: as old as the oldest source we still rely on
+  const fetched = [d.weather?.fetchedAt, d.air?.fetchedAt].filter(Boolean).sort()[0] || d.generatedAt;
+  const hours = (Date.now() - new Date(fetched)) / 3600000;
+  const stale = hours > config.staleAfterHours;
+  $("#status").innerHTML =
+    `<span class="badge ${stale ? "warn" : "ok"}">${stale ? "old data" : "fresh"}</span> ` +
+    `updated ${when(fetched)} (${ago(fetched)})`;
+
+  // Weather table
+  const w = d.weather;
+  if (w) {
+    $("#weather").innerHTML =
+      Object.entries(w.values).map(([k, v]) => row(LABELS[k] || k, `${v} ${w.units?.[k] ?? ""}`)).join("") +
+      row("Sunrise", when(w.sunrise)) +
+      row("Sunset", when(w.sunset)) +
+      row("Model time", `${when(w.measuredAt)} (${ago(w.measuredAt)})`) +
+      row("Source", w.attribution);
+  } else {
+    $("#weather").innerHTML = row("Status", `<span class="bad">no weather data</span>`);
+  }
+
+  // Air table
+  const a = d.air;
+  if (a) {
+    $("#air").innerHTML =
+      row("Fine particles PM2.5", `${a.pm2_5} ${a.unit}`) +
+      row("Measured", `${when(a.measuredAt)} (${ago(a.measuredAt)})`) +
+      row("Station", a.station) +
+      row("Source", `${a.source === "IRCEL-CELINE" ? "" : '<span class="warn">fallback</span> '}${a.attribution}`);
+  } else {
+    $("#air").innerHTML = row("Status", `<span class="bad">no air data</span>`);
+  }
+
+  if (d.problems?.length) {
+    $("#problems").innerHTML = "<ul>" + d.problems.map((p) => `<li class="warn">${esc(p)}</li>`).join("") + "</ul>";
+  }
+} catch (err) {
+  $("#status").innerHTML = `<span class="badge bad">error</span> ${err.message}`;
+}
+</script>
+</body>
+</html>

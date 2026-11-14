@@ -1,0 +1,50 @@
+# Every hour: fetch the Brussels weather and air quality, save data/latest.json.
+# On the main branch the new file is committed, which makes Vercel republish the site.
+# On any other branch it is only a test run: the result is printed, nothing is saved.
+
+name: Hourly data
+
+on:
+  schedule:
+    - cron: "20 * * * *"   # 20 minutes past every hour (UTC), once IRCEL has published the hourly mean
+  workflow_dispatch:         # "Run workflow" button on GitHub
+  push:
+    paths:
+      - "scripts/fetch-data.mjs"
+      - "config.js"
+      - ".github/workflows/hourly.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hourly-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Fetch weather and air quality
+        run: node scripts/fetch-data.mjs
+
+      - name: Save the new data (main branch only)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "fontcast-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/latest.json
+          if git diff --cached --quiet; then
+            echo "No change."
+          else
+            git commit -m "data: $(date -u +'%Y-%m-%d %H:%M') UTC"
+            git pull --rebase
+            git push
+          fi
