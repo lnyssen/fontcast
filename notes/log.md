@@ -48,3 +48,9 @@
 - Hour-by-hour sheets of a grey and a clear November day checked: night, dawn (around sunrise), day, dusk (around sunset), night.
 - Case rule unchanged (stable per-letter thresholds, flips one by one as pressure falls).
 - Glyphs (Laurent chose option D): capital I gets bars top and bottom; lowercase l gets a long rounded foot.
+
+## 2026-11-14 · Main word: a weather word
+- Laurent chose a word that names the weather instead of a fixed "Brussels".
+- `config.text` is `["{weather}"]`; `src/words.js` picks the word: rain first, then wind, pollution, frost, heat, fog, cold, clouds, clear sky (day or night).
+- Each condition has a few words; the date picks one, so the word is stable all day while the weather holds.
+- Rain thresholds (0.5 and 4 mm) depend on the precipitation unit, still to verify on a rainy day.
