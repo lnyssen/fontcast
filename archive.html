@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fontcast · Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* One poster a day, at noon. Newest first, grouped by month. */
+  :root { --bg:#16171a; --line:#2e3137; --txt:#e9e7e1; --mute:#8d9099; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:13px/1.5 "IBM Plex Mono", ui-monospace, monospace; }
+  header { max-width:1400px; margin:0 auto; padding:32px 16px 8px; display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  h1 { font-size:13px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; margin:0; }
+  a { color:inherit; }
+  .mute { color:var(--mute); }
+  main { max-width:1400px; margin:0 auto; padding:0 16px 64px; }
+  h2 { font-size:11px; font-weight:500; letter-spacing:.12em; text-transform:uppercase; color:var(--mute); border-top:1px solid var(--line); padding-top:12px; margin:32px 0 12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:16px; }
+  .day { text-decoration:none; display:block; }
+  .day img { width:100%; aspect-ratio:1/1.414; display:block; background:#222; }
+  .day span { display:block; margin-top:6px; font-size:11px; color:var(--mute); }
+  .day:hover span { color:var(--txt); }
+  /* Full-size view */
+  dialog { border:0; padding:0; background:transparent; max-width:96vw; max-height:96vh; }
+  dialog::backdrop { background:rgba(10,10,12,.92); }
+  dialog img { display:block; max-height:88vh; max-width:94vw; height:auto; }
+  dialog p { margin:10px 0 0; display:flex; gap:16px; flex-wrap:wrap; color:var(--txt); }
+  dialog button { background:none; border:0; color:inherit; font:inherit; cursor:pointer; padding:0; text-decoration:underline; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Fontcast · Archive</h1>
+  <span class="mute">One poster a day, at noon in Brussels · <a href="./">live poster</a></span>
+</header>
+<main id="list"><p class="mute">Loading…</p></main>
+
+<dialog id="view">
+  <img id="big" alt="">
+  <p><span id="cap"></span><a id="svg" download>SVG</a><a id="png" download>PNG</a><a id="json" download>data</a><button id="close">close</button></p>
+</dialog>
+
+<script type="module">
+const $ = (s) => document.querySelector(s);
+const nice = (d) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+const month = (d) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+
+try {
+  const res = await fetch("archive/index.json", { cache: "no-store" });
+  const days = res.ok ? await res.json() : [];
+  if (!days.length) {
+    $("#list").innerHTML = `<p class="mute">No posters yet. The first one is saved at noon.</p>`;
+  } else {
+    // Group by month
+    let html = "", current = "";
+    for (const d of days) {
+      const m = month(d.date);
+      if (m !== current) { html += (current ? "</div>" : "") + `<h2>${m}</h2><div class="grid">`; current = m; }
+      const t = d.temperature != null ? ` · ${d.temperature} °C` : "";
+      html += `<a class="day" href="${d.png}" data-date="${d.date}"><img src="${d.png}" loading="lazy" alt="Fontcast poster, ${nice(d.date)}"><span>${nice(d.date)}${t}</span></a>`;
+    }
+    $("#list").innerHTML = html + "</div>";
+
+    // Click: open the poster large, with download links
+    $("#list").addEventListener("click", (e) => {
+      const a = e.target.closest(".day");
+      if (!a) return;
+      e.preventDefault();
+      const d = days.find((x) => x.date === a.dataset.date);
+      $("#big").src = d.png;
+      $("#big").alt = `Fontcast poster, ${nice(d.date)}`;
+      $("#cap").textContent = nice(d.date);
+      $("#svg").href = d.svg;
+      $("#png").href = d.png;
+      $("#json").href = d.svg.replace(/\.svg$/, ".json");
+      $("#view").showModal();
+    });
+    $("#close").onclick = () => $("#view").close();
+    $("#view").addEventListener("click", (e) => { if (e.target.id === "view") $("#view").close(); });
+  }
+} catch (err) {
+  $("#list").innerHTML = `<p class="mute">The archive could not be loaded (${err.message}).</p>`;
+}
+</script>
+</body>
+</html>

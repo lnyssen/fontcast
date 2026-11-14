@@ -31,3 +31,12 @@
 - `index.html` is the live poster (re-reads the data every 10 min, the sky follows the clock every minute). `?simulate` brings back the sliders, with a humidity slider and a "Live values" button.
 - Footer: "updated HH:MM · data Open-Meteo, IRCEL-CELINE" (or CAMS), or "last data HH:MM, not updated since" after 3 h.
 - Open question: Open-Meteo's current `precipitation` may be the amount of the last 15 minutes, not per hour. Not verified.
+
+## Phase 4 · daily archive (2026-11-14)
+
+- `scripts/snapshot.mjs`: at noon Brussels time, freezes the poster as `archive/YYYY/YYYY-MM-DD.svg`, `.png` (2000 px, via `@resvg/resvg-js`, approved by Laurent) and `.json`, then rebuilds `archive/index.json`.
+- `.github/workflows/daily-archive.yml`: starts at 10:30 and 11:30 UTC; only the run at 12:30 Brussels does the work (summer/winter time safe). Fetches fresh data first. Manual "Run workflow" with *force* re-does today.
+- Both jobs share one concurrency group so they never save at the same time.
+- `archive.html`: grid by month, click to view large, download SVG/PNG/data.
+- No email (Laurent's choice). Measured: SVG about 30 KB, PNG about 155 KB, so roughly 70 MB a year.
+- Phase 3 (case rule refinement, accelerated day in simulate, footer contrast check) is still to do.
