@@ -14,9 +14,19 @@ If a source fails, the last good values are kept and the problem is noted in the
 
 | Page | What it shows |
 |---|---|
-| `index.html` | Home (the live poster arrives in phase 2) |
+| `index.html` | The live poster. Add `?simulate` to the address to test any weather with sliders |
 | `debug.html` | Raw values, their source and their age |
 | `prototype/` | The original prototype with simulated weather |
+
+## Code
+
+| File | Role |
+|---|---|
+| `src/glyphs.js` | Letter skeletons |
+| `src/letters.js` | Weather → letterforms (width, weight, slant, counters, corners, case, serifs) |
+| `src/sky.js` | Weather → background (sky, sun and moon, clouds, rain, haze) |
+| `src/render.js` | The shared poster function: weather in, SVG out |
+| `src/live.js` | Turns `data/latest.json` into the weather the poster needs |
 
 ## Settings
 

@@ -21,10 +21,10 @@ const problems = [];
 
 // ---------- small helpers ----------
 
-// Download JSON, give up after 20 seconds, try twice.
+// Download JSON. Give up after 20 seconds; try 3 times, waiting a little longer each time.
 async function getJSON(url) {
   let lastError;
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const res = await fetch(url, {
         headers: { "User-Agent": "fontcast (github.com/lnyssen/fontcast)" },
@@ -34,7 +34,10 @@ async function getJSON(url) {
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${text.slice(0, 300)}`);
       return JSON.parse(text);
     } catch (err) {
-      lastError = err;
+      // "fetch failed" alone says nothing: add the network reason (timeout, DNS, reset…)
+      const why = err.cause?.code || err.cause?.message;
+      lastError = new Error(`${err.message}${why ? ` (${why})` : ""}, after ${attempt} attempt(s)`);
+      if (attempt < 3) await new Promise((r) => setTimeout(r, attempt * 5000));
     }
   }
   throw lastError;

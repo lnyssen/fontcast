@@ -4,22 +4,158 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fontcast · Brussels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  body { margin:0; background:#16171a; color:#e9e7e1; font:14px/1.6 ui-monospace, Menlo, monospace; }
-  main { max-width: 640px; margin: 0 auto; padding: 48px 16px; }
-  h1 { font-size: 14px; letter-spacing: .14em; text-transform: uppercase; margin: 0 0 8px; }
-  p { color:#8d9099; } a { color: inherit; }
+  :root { --bg:#16171a; --panel:#1e2024; --line:#2e3137; --txt:#e9e7e1; --mute:#8d9099; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; min-height:100%; background:var(--bg); color:var(--txt); font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:13px; }
+
+  /* Live mode: just the poster, as large as the screen allows */
+  .live { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .live #poster { width:100%; max-width:min(900px, calc((100vh - 48px) / 1.414)); }
+  #poster svg { width:100%; height:auto; display:block; box-shadow:0 20px 60px rgba(0,0,0,.45); }
+
+  /* Simulate mode (?simulate): the prototype's control panel */
+  .app { display:flex; gap:28px; padding:24px; }
+  aside { width:330px; flex:none; display:flex; flex-direction:column; gap:18px; }
+  h1 { font-size:13px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; margin:0; }
+  .sub { color:var(--mute); line-height:1.5; margin:4px 0 0; }
+  .group { border-top:1px solid var(--line); padding-top:14px; display:flex; flex-direction:column; gap:13px; }
+  .glabel { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--mute); }
+  .ctl label { display:flex; justify-content:space-between; margin-bottom:6px; gap:8px; }
+  .ctl label span:last-child { color:var(--txt); font-variant-numeric:tabular-nums; text-align:right; }
+  .ctl small { display:block; color:var(--mute); margin-top:4px; font-size:11px; }
+  input[type=range] { width:100%; accent-color:#e9e7e1; margin:0; }
+  textarea { width:100%; background:var(--panel); color:var(--txt); border:1px solid var(--line); border-radius:4px; padding:8px; font:inherit; resize:vertical; min-height:64px; }
+  .presets, .row { display:flex; flex-wrap:wrap; gap:6px; }
+  button { background:var(--panel); color:var(--txt); border:1px solid var(--line); border-radius:4px; padding:7px 10px; font:inherit; cursor:pointer; }
+  button:hover { border-color:#5a5e66; }
+  button.on { background:var(--txt); color:var(--bg); border-color:var(--txt); }
+  .note { color:var(--mute); font-size:11px; line-height:1.5; margin:0; }
+  .app main { flex:1; display:flex; justify-content:center; min-width:0; position:sticky; top:24px; align-self:flex-start; }
+  .app #poster { width:100%; max-width:min(760px, calc((100vh - 48px) / 1.414)); }
+  #toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--txt); color:var(--bg); padding:8px 14px; border-radius:4px; opacity:0; transition:opacity .2s; pointer-events:none; }
+  #toast.show { opacity:1; }
+  @media (max-width:820px) { .app { flex-direction:column; padding:16px; } aside { width:100%; } .app main { position:static; } }
 </style>
 </head>
 <body>
-<main>
-  <!-- Temporary home page. The live poster replaces it in phase 2. -->
-  <h1>Fontcast · Brussels</h1>
-  <p>A typeface that breathes the city. The live poster is coming soon.</p>
-  <ul>
-    <li><a href="debug.html">Data check</a>: today's raw weather and air values</li>
-    <li><a href="prototype/">Prototype</a>: the poster with simulated weather</li>
-  </ul>
-</main>
+<div id="root"></div>
+<div id="toast"></div>
+
+<script type="module">
+import config from "./config.js";
+import { poster } from "./src/render.js";
+import { weatherFrom, footerFrom, hourIn } from "./src/live.js";
+import { nf, NB, card, hhmm } from "./src/utils.js";
+
+const $ = (s) => document.querySelector(s);
+const tz = config.place.timezone;
+const simulate = new URLSearchParams(location.search).has("simulate");
+
+// Read the latest data. Never throws: returns null if there is none yet.
+async function loadData() {
+  try {
+    const res = await fetch("data/latest.json", { cache: "no-store" });
+    return res.ok ? await res.json() : null;
+  } catch { return null; }
+}
+
+// ================= LIVE MODE =================
+async function live() {
+  $("#root").innerHTML = `<div class="live"><div id="poster"></div></div>`;
+  let data = await loadData();
+  const draw = () => {
+    const now = new Date();
+    const W = data ? weatherFrom(data, now, tz) : { ...PRESETS[0].v, hour: hourIn(now, tz), sunrise: 8, sunset: 16.8 };
+    const footer = data ? footerFrom(data, now, tz, config.staleAfterHours) : "no live data yet";
+    $("#poster").innerHTML = poster(W, { lines: config.text, ranges: config.ranges, date: now, timezone: tz, footer });
+  };
+  draw();
+  setInterval(draw, 60 * 1000);                                         // the sky moves with the clock
+  setInterval(async () => { data = (await loadData()) || data; draw(); }, 10 * 60 * 1000); // new data
+}
+
+// ================= SIMULATE MODE (?simulate) =================
+const DEFS = [
+  { k: "hour",  lab: "Time of day",  min: 0, max: 23.75, step: .25, fmt: (v) => hhmm(v), hint: "sky colour, day or night" },
+  { k: "temp",  lab: "Temperature",  min: -10, max: 35, step: .5, fmt: (v) => nf(v, 1) + NB + "°C", hint: "cold → condensed, hot → extended; tints the sky" },
+  { k: "hum",   lab: "Humidity",     min: 20, max: 100, step: 1, fmt: (v) => nf(v) + NB + "%", hint: "dry → sans serif, humid → serifs grow" },
+  { k: "rain",  lab: "Rain",         min: 0, max: 8, step: .1, fmt: (v) => nf(v, 1) + NB + "mm", hint: "heavier weight, letters drip, rain on the page" },
+  { k: "wind",  lab: "Wind",         min: 0, max: 90, step: 1, fmt: (v) => nf(v) + NB + "km/h", hint: "slants and shakes the strokes" },
+  { k: "dir",   lab: "Wind from",    min: 0, max: 359, step: 1, fmt: (v) => card(v) + " (" + nf(v) + "°)", hint: "sets the direction of the slant and rain" },
+  { k: "pm",    lab: "Fine particles PM2.5", min: 0, max: 75, step: 1, fmt: (v) => nf(v) + NB + "µg/m³", hint: "fills the counters, hazes the page" },
+  { k: "cloud", lab: "Cloud cover",  min: 0, max: 100, step: 1, fmt: (v) => nf(v) + NB + "%", hint: "rounds the corners, greys the sky" },
+  { k: "pres",  lab: "Air pressure", min: 975, max: 1045, step: 1, fmt: (v) => nf(v) + NB + "hPa", hint: "high → capitals stand tall, low → letters sink to lowercase" },
+];
+const PRESETS = [
+  { n: "November grey",  v: { temp: 8,  hum: 88, rain: .6, wind: 22, dir: 225, pm: 12, cloud: 90,  pres: 1012, hour: 15 } },
+  { n: "Storm",          v: { temp: 11, hum: 94, rain: 6,  wind: 80, dir: 250, pm: 4,  cloud: 100, pres: 982,  hour: 17.5 } },
+  { n: "Heatwave",       v: { temp: 33, hum: 30, rain: 0,  wind: 6,  dir: 90,  pm: 32, cloud: 5,   pres: 1022, hour: 13 } },
+  { n: "Frosty dawn",    v: { temp: -6, hum: 85, rain: 0,  wind: 12, dir: 45,  pm: 18, cloud: 0,   pres: 1038, hour: 8 } },
+  { n: "Pollution peak", v: { temp: 3,  hum: 75, rain: 0,  wind: 3,  dir: 70,  pm: 72, cloud: 55,  pres: 1030, hour: 11 } },
+  { n: "Summer shower",  v: { temp: 24, hum: 80, rain: 4.5, wind: 30, dir: 200, pm: 8, cloud: 70,  pres: 1003, hour: 19 } },
+  { n: "Clear night",    v: { temp: 2,  hum: 60, rain: 0,  wind: 8,  dir: 300, pm: 10, cloud: 10,  pres: 1026, hour: 23 } },
+];
+
+async function sim() {
+  $("#root").innerHTML = `<div class="app">
+  <aside>
+    <div><h1>Fontcast · simulate</h1>
+      <p class="sub">Test any weather. <a href="./" style="color:inherit">Back to the live poster</a>.</p></div>
+    <div class="group"><div class="glabel">Scenarios</div><div class="presets" id="presets"></div></div>
+    <div class="group" id="controls"></div>
+    <div class="group">
+      <div class="glabel">Text <span style="text-transform:none;letter-spacing:0">(Enter = new line)</span></div>
+      <textarea id="txt" spellcheck="false" rows="3">${config.text.join("\n")}</textarea>
+      <div class="row">
+        <button id="live">Live values</button>
+        <button id="rand">Random sky</button>
+        <button id="now">Hour = now</button>
+        <button id="copy">Copy SVG</button>
+      </div>
+      <p class="note">Sunrise and sunset come from today's live data when available.</p>
+    </div>
+  </aside>
+  <main><div id="poster"></div></main></div>`;
+
+  const data = await loadData();
+  const liveW = data ? weatherFrom(data, new Date(), tz) : null;
+  const P = { ...PRESETS[0].v, sunrise: liveW?.sunrise ?? 8, sunset: liveW?.sunset ?? 16.8 };
+  P.hour = Math.round(hourIn(new Date(), tz) * 4) / 4;
+
+  const render = () => {
+    $("#poster").innerHTML = poster(P, {
+      lines: $("#txt").value.split(/\n/), ranges: config.ranges, date: new Date(), timezone: tz, footer: "simulated weather",
+    });
+  };
+  const ctl = $("#controls");
+  ctl.innerHTML = '<div class="glabel">Sky</div>' + DEFS.map((d) => `<div class="ctl"><label><span>${d.lab}</span><span id="o-${d.k}"></span></label><input type="range" id="r-${d.k}" min="${d.min}" max="${d.max}" step="${d.step}"><small>${d.hint}</small></div>`).join("");
+  const sync = () => DEFS.forEach((d) => { $("#r-" + d.k).value = P[d.k]; $("#o-" + d.k).textContent = d.fmt(P[d.k]); });
+  const pw = $("#presets");
+  const mark = (i) => [...pw.children].forEach((b, j) => b.classList.toggle("on", j === i));
+  DEFS.forEach((d) => $("#r-" + d.k).addEventListener("input", (e) => { P[d.k] = +e.target.value; $("#o-" + d.k).textContent = d.fmt(P[d.k]); mark(null); render(); }));
+  PRESETS.forEach((p, i) => { const b = document.createElement("button"); b.textContent = p.n; b.onclick = () => { Object.assign(P, p.v); sync(); mark(i); render(); }; pw.appendChild(b); });
+  $("#txt").addEventListener("input", render);
+  $("#live").onclick = () => { if (!liveW) return toast("No live data yet"); Object.assign(P, weatherFrom(data, new Date(), tz)); sync(); mark(null); render(); };
+  $("#rand").onclick = () => {
+    DEFS.forEach((d) => { const v = d.min + Math.random() * (d.max - d.min); P[d.k] = Math.round(v / d.step) * d.step; });
+    if (Math.random() < .5) P.rain = 0;
+    if (Math.random() < .6) P.pm = Math.round(Math.random() * 25);
+    sync(); mark(null); render();
+  };
+  $("#now").onclick = () => { P.hour = Math.round(hourIn(new Date(), tz) * 4) / 4; sync(); mark(null); render(); };
+  $("#copy").onclick = async () => {
+    try { await navigator.clipboard.writeText($("#poster").innerHTML); toast("SVG copied"); }
+    catch { toast("Copy blocked by the browser"); }
+  };
+  mark(0); sync(); render();
+}
+
+function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 1600); }
+
+simulate ? sim() : live();
+</script>
 </body>
 </html>
