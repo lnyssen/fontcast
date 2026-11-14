@@ -26,8 +26,8 @@
 
 - Prototype split into modules (`src/`), look unchanged except for Laurent's requests:
   - humidity drives serifs (50 % = sans serif, 95 % = full serifs), on every free stroke end;
-  - sun and moon are sharp flat discs, clouds are sharp flat capsules: no blur anywhere;
-  - sky uses the real sunrise and sunset.
+  - background is one flat colour, no sun, moon, clouds, stars, rain or grain (Laurent's call). The colour still carries time of day (real sunrise and sunset), clouds, temperature, rain and pollution;
+  - ink is dark or light, whichever gives the higher WCAG contrast with that colour.
 - `index.html` is the live poster (re-reads the data every 10 min, the sky follows the clock every minute). `?simulate` brings back the sliders, with a humidity slider and a "Live values" button.
 - Footer: "updated HH:MM · data Open-Meteo, IRCEL-CELINE" (or CAMS), or "last data HH:MM, not updated since" after 3 h.
 - Open question: Open-Meteo's current `precipitation` may be the amount of the last 15 minutes, not per hour. Not verified.
