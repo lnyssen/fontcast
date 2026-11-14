@@ -53,6 +53,20 @@ const config = {
 
   // When the poster should say "data is old" (hours since the last good reading).
   staleAfterHours: 3,
+
+  // The main word on the poster, one line per entry. The weather decides the case.
+  text: ["Bru", "xel", "les"],
+
+  // Weather ranges: below the first number nothing happens, at the second the effect is full.
+  ranges: {
+    temperature: [-10, 35],   // °C      cold = condensed, hot = extended
+    rain: [0, 8],             // mm/h    heavier weight, drips
+    wind: [0, 80],            // km/h    slant and jitter
+    pm25: [0, 75],            // µg/m³   counters fill up
+    cloud: [0, 100],          // %       rounder corners
+    pressure: [1030, 985],    // hPa     high = capitals, low = lowercase
+    humidity: [50, 95],       // %       dry = sans serif, humid = serif
+  },
 };
 
 export default config;

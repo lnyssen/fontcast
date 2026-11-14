@@ -15,3 +15,19 @@
 - `.github/workflows/hourly.yml`: runs at 20 minutes past every hour; commits the file on `main` only.
 - `debug.html`: plain page with the raw values, their source and their age.
 - The prototype is kept unchanged in `prototype/index.html`.
+
+### Phase 1 follow-ups
+
+- Overlapping runs no longer fail (the job saves on top of the newest `main`).
+- Relative humidity added to the data.
+- The data job now waits 5 s, then 10 s between attempts, and names the network error.
+
+## Phase 2 · live poster (2026-11-14)
+
+- Prototype split into modules (`src/`), look unchanged except for Laurent's requests:
+  - humidity drives serifs (50 % = sans serif, 95 % = full serifs), on every free stroke end;
+  - background is one flat colour, no sun, moon, clouds, stars, rain or grain (Laurent's call). The colour still carries time of day (real sunrise and sunset), clouds, temperature, rain and pollution;
+  - ink is dark or light, whichever gives the higher WCAG contrast with that colour.
+- `index.html` is the live poster (re-reads the data every 10 min, the sky follows the clock every minute). `?simulate` brings back the sliders, with a humidity slider and a "Live values" button.
+- Footer: "updated HH:MM · data Open-Meteo, IRCEL-CELINE" (or CAMS), or "last data HH:MM, not updated since" after 3 h.
+- Open question: Open-Meteo's current `precipitation` may be the amount of the last 15 minutes, not per hour. Not verified.
