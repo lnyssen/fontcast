@@ -26,7 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      # Take the newest version of the branch, not the one from when the run was queued.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - uses: actions/setup-node@v4
         with:
@@ -40,11 +43,21 @@ jobs:
         run: |
           git config user.name "fontcast-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/latest.json
-          if git diff --cached --quiet; then
-            echo "No change."
-          else
+          # Keep our fresh file aside, catch up with any newer commit, then save it.
+          # Our data is always the newest, so it simply replaces the file. Tries 3 times.
+          cp data/latest.json "$RUNNER_TEMP/latest.json"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp "$RUNNER_TEMP/latest.json" data/latest.json
+            git add data/latest.json
+            if git diff --cached --quiet; then
+              echo "No change."
+              exit 0
+            fi
             git commit -m "data: $(date -u +'%Y-%m-%d %H:%M') UTC"
-            git pull --rebase
-            git push
-          fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 5
+          done
+          echo "Could not save the data after 3 attempts."
+          exit 1

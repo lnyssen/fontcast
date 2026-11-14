@@ -21,6 +21,7 @@ const config = {
     url: "https://api.open-meteo.com/v1/forecast",
     current: [
       "temperature_2m",
+      "relative_humidity_2m",   // drives serif vs sans serif (dry = sans, humid = serif)
       "precipitation",
       "wind_speed_10m",
       "wind_direction_10m",
