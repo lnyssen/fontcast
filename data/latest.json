@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T10:51:29.491Z",
+  "generatedAt": "2026-11-14T11:02:06.863Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -41,7 +41,9 @@
     "pm2_5": 9.427,
     "unit": "µg/m³",
     "measuredAt": "2026-11-14T10:00:00.000Z",
-    "fetchedAt": "2026-11-14T10:51:29.491Z"
+    "fetchedAt": "2026-11-14T11:02:06.863Z"
   },
-  "problems": []
+  "problems": [
+    "Weather: fetch failed (UND_ERR_CONNECT_TIMEOUT), after 3 attempt(s)"
+  ]
 }
