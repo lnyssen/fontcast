@@ -9,7 +9,7 @@
 
 import { style, block } from "./letters.js";
 import { sky, background } from "./sky.js";
-import { NB, nf, card, hhmm, esc, clean } from "./utils.js";
+import { NB, nf, card, hhmm, esc, clean, readableOpacity } from "./utils.js";
 
 /*
   W     the weather: { hour, sunrise, sunset (decimal hours, Brussels time),
@@ -34,6 +34,8 @@ export function poster(W, opts) {
   const main = block("m", lines, { x: 70, y: 150, w: 860, h: 640 }, S, ink, null, "weather");
   const spec = block("s", ["ABCDEFGHIJKLM", "nopqrstuvwxyz", "0123456789"], { x: 70, y: 880, w: 860, h: 330 }, S, ink, Math.min(main.u * 0.55, 48), "fixed");
 
+  // Secondary text is a little faded, but never below a 4.5:1 contrast (WCAG AA)
+  const faded = readableOpacity(ink, K.bg, 0.65);
   const mono = `font-family="IBM Plex Mono, ui-monospace, monospace" fill="${ink}"`;
   const data = [
     `${nf(W.temp, 1)}${NB}°C`,
@@ -55,7 +57,7 @@ export function poster(W, opts) {
     spec.svg +
     `<line x1="70" x2="930" y1="1262" y2="1262" stroke="${ink}" stroke-width="1.2"/>` +
     `<text x="70" y="1300" ${mono} font-size="14">${data}</text>` +
-    `<text x="70" y="1336" ${mono} font-size="14" fill-opacity=".65">${esc(dateStr)}</text>` +
-    `<text x="930" y="1336" ${mono} font-size="14" text-anchor="end" fill-opacity=".65">${esc(opts.footer || "")}</text>` +
+    `<text x="70" y="1336" ${mono} font-size="14" fill-opacity="${faded}">${esc(dateStr)}</text>` +
+    `<text x="930" y="1336" ${mono} font-size="14" text-anchor="end" fill-opacity="${faded}">${esc(opts.footer || "")}</text>` +
     `</svg>`;
 }

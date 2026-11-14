@@ -40,3 +40,11 @@
 - `archive.html`: grid by month, click to view large, download SVG/PNG/data.
 - No email (Laurent's choice). Measured: SVG about 30 KB, PNG about 155 KB, so roughly 70 MB a year.
 - Phase 3 (case rule refinement, accelerated day in simulate, footer contrast check) is still to do.
+
+## Phase 3 · background and case (2026-11-14)
+
+- Small text contrast is computed, not guessed: the faded date/footer lines use the faintest opacity (from 65 %) that still reaches 4.5:1. Mid-grey skies where neither ink reaches 4.5:1 get their background nudged a few percent away from the ink. Checked on 38,400 combinations of hour, cloud, rain, PM2.5 and temperature: worst case 4.50:1.
+- Simulate mode: "Play a day" runs 24 hours in 24 seconds.
+- Hour-by-hour sheets of a grey and a clear November day checked: night, dawn (around sunrise), day, dusk (around sunset), night.
+- Case rule unchanged (stable per-letter thresholds, flips one by one as pressure falls).
+- Glyphs (Laurent chose option D): capital I gets bars top and bottom; lowercase l gets a long rounded foot.

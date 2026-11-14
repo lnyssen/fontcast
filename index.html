@@ -113,9 +113,10 @@ async function sim() {
         <button id="live">Live values</button>
         <button id="rand">Random sky</button>
         <button id="now">Hour = now</button>
+        <button id="play">▶ Play a day</button>
         <button id="copy">Copy SVG</button>
       </div>
-      <p class="note">Sunrise and sunset come from today's live data when available.</p>
+      <p class="note">Sunrise and sunset come from today's live data when available. "Play a day" runs 24 hours in 24 seconds with the current weather.</p>
     </div>
   </aside>
   <main><div id="poster"></div></main></div>`;
@@ -150,6 +151,22 @@ async function sim() {
     try { await navigator.clipboard.writeText($("#poster").innerHTML); toast("SVG copied"); }
     catch { toast("Copy blocked by the browser"); }
   };
+  // Accelerated day: one hour per second, from midnight to midnight
+  let playing = null;
+  const stop = () => { cancelAnimationFrame(playing); playing = null; $("#play").textContent = "▶ Play a day"; $("#play").classList.remove("on"); };
+  $("#play").onclick = () => {
+    if (playing) return stop();
+    const start = performance.now();
+    $("#play").textContent = "■ Stop"; $("#play").classList.add("on");
+    const step = (t) => {
+      const h = (t - start) / 1000;
+      if (h >= 24) { P.hour = 23.75; sync(); render(); return stop(); }
+      P.hour = h; $("#r-hour").value = h; $("#o-hour").textContent = hhmm(h); render();
+      playing = requestAnimationFrame(step);
+    };
+    playing = requestAnimationFrame(step);
+  };
+
   mark(0); sync(); render();
 }
 

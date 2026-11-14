@@ -7,7 +7,7 @@
                 gradient: the weather lives in the colour and in the letters.
 */
 
-import { clamp, mix, lum, grey } from "./utils.js";
+import { clamp, mix, grey, contrast } from "./utils.js";
 
 // Sky keyframes: [top colour, bottom colour]
 const K = {
@@ -46,12 +46,13 @@ export function sky(W) {
   const pz = clamp(W.pm / 75, 0, 1);
   bg = mix(bg, "#9c8a66", pz * 0.38);
 
-  // Ink: dark or light, whichever contrasts more with the background (WCAG ratio)
-  const L = lum(bg);
-  const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  // Ink: dark or light, whichever contrasts more with the background (WCAG ratio).
+  // Mid greys can fall short of 4.5:1 with both inks: then the background is
+  // nudged, a few percent at a time, away from the ink until it reads.
   const dark = "#141414", light = "#f1eee6";
-  const ink = ratio(L, lum(dark)) >= ratio(L, lum(light)) ? dark : light;
-  return { bg, ink, contrast: ratio(L, lum(ink)), night: ink === light, isDay: h >= r && h <= s };
+  const ink = contrast(bg, dark) >= contrast(bg, light) ? dark : light;
+  for (let i = 0; i < 30 && contrast(bg, ink) < 4.5; i++) bg = mix(bg, ink === dark ? "#ffffff" : "#000000", 0.03);
+  return { bg, ink, contrast: contrast(bg, ink), night: ink === light, isDay: h >= r && h <= s };
 }
 
 export function background(W, Ky) {

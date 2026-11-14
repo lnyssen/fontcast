@@ -58,6 +58,15 @@ export const lum = (h) => {
   const c = hx(h).map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
   return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 };
+// WCAG contrast ratio between two colours (1 to 21). 4.5 is the minimum for small text.
+export const contrast = (a, b) => { const A = lum(a), B = lum(b); return (Math.max(A, B) + 0.05) / (Math.min(A, B) + 0.05); };
+// The faintest opacity (from `wanted` up to 1) at which `ink` over `bg` still reaches `min`.
+export function readableOpacity(ink, bg, wanted, min = 4.5) {
+  for (let pct = Math.round(wanted * 100); pct < 100; pct++) {
+    if (contrast(mix(bg, ink, pct / 100), bg) >= min) return pct / 100;
+  }
+  return 1;
+}
 export const grey = (h) => { const l = Math.round(hx(h).reduce((a, b) => a + b) / 3); return toHex([l, l, l + 4]); };
 
 // Text
