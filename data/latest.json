@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-11-14T10:05:30.067Z",
+  "place": {
+    "name": "Brussels",
+    "latitude": 50.8467,
+    "longitude": 4.3525,
+    "timezone": "Europe/Brussels"
+  },
+  "weather": null,
+  "air": {
+    "source": "IRCEL-CELINE",
+    "attribution": "Air quality: IRCEL-CELINE (CC BY 4.0)",
+    "station": "41REG1 Brussels (Bd du Régent)",
+    "pm2_5": 8.694,
+    "unit": "µg/m³",
+    "measuredAt": "2026-11-14T09:00:00.000Z",
+    "fetchedAt": "2026-11-14T10:05:30.067Z"
+  },
+  "problems": [
+    "Weather: fetch failed"
+  ]
+}
