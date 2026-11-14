@@ -1,0 +1,88 @@
+# Every day at noon (Brussels time): freeze the poster into archive/YYYY/.
+# GitHub's clock is UTC, so it starts at 10:30 and 11:30 UTC; the script only
+# works on the run that is 12:30 in Brussels (summer or winter time).
+# On any other branch it is a test run: it forces a snapshot, nothing is saved,
+# and the PNG can be downloaded from the run page ("Artifacts").
+
+name: Daily archive
+
+on:
+  schedule:
+    - cron: "30 10 * * *"
+    - cron: "30 11 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Archive now, even if it is not noon (overwrites today)"
+        type: boolean
+        default: false
+  push:
+    paths:
+      - "scripts/snapshot.mjs"
+      - ".github/workflows/daily-archive.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fontcast-commit   # shared with the hourly job, so they never save at the same time
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the PNG converter
+        run: npm ci
+
+      - name: Fresh data
+        run: node scripts/fetch-data.mjs
+
+      - name: Snapshot
+        run: |
+          if [ "${{ github.ref }}" != "refs/heads/main" ] || [ "${{ inputs.force }}" = "true" ]; then
+            node scripts/snapshot.mjs --force
+          else
+            node scripts/snapshot.mjs
+          fi
+
+      - name: Keep the test PNG (branches only)
+        if: github.ref != 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-poster
+          path: archive/
+
+      - name: Save (main branch only)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config user.name "fontcast-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Keep our new files aside, catch up with any newer commit, then save them.
+          mkdir -p "$RUNNER_TEMP/out"
+          cp -r data "$RUNNER_TEMP/out/"
+          [ -d archive ] && cp -r archive "$RUNNER_TEMP/out/"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git reset --hard origin/main
+            cp -r "$RUNNER_TEMP/out/." .
+            git add data archive 2>/dev/null || git add data
+            if git diff --cached --quiet; then
+              echo "Nothing new."
+              exit 0
+            fi
+            git commit -m "archive: $(TZ=Europe/Brussels date +'%Y-%m-%d')"
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 5
+          done
+          echo "Could not save after 3 attempts."
+          exit 1

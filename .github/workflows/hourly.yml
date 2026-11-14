@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: hourly-data
+  group: fontcast-commit   # shared with the daily archive, so they never save at the same time
   cancel-in-progress: false
 
 jobs:
