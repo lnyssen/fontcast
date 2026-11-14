@@ -54,8 +54,8 @@ const config = {
   // When the poster should say "data is old" (hours since the last good reading).
   staleAfterHours: 3,
 
-  // The main word on the poster, one line per entry. The weather decides the case.
-  text: ["Bru", "xel", "les"],
+  // The main word on the poster, one line per entry (here: one line). The weather decides the case.
+  text: ["Brussels"],
 
   // Weather ranges: below the first number nothing happens, at the second the effect is full.
   ranges: {
