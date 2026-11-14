@@ -55,7 +55,9 @@ const config = {
   staleAfterHours: 3,
 
   // The main word on the poster, one line per entry (here: one line). The weather decides the case.
-  text: ["Brussels"],
+  // "{weather}" is replaced by a word for the current weather (lists in src/words.js).
+  // For a fixed word, write it instead, e.g. ["Brussels"].
+  text: ["{weather}"],
 
   // Weather ranges: below the first number nothing happens, at the second the effect is full.
   ranges: {

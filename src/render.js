@@ -9,12 +9,13 @@
 
 import { style, block } from "./letters.js";
 import { sky, background } from "./sky.js";
+import { wordFor } from "./words.js";
 import { NB, nf, card, hhmm, esc, clean, readableOpacity } from "./utils.js";
 
 /*
   W     the weather: { hour, sunrise, sunset (decimal hours, Brussels time),
         temp, rain, wind, dir, pm, cloud, pres, hum }
-  opts  { lines: ["Bru","xel","les"], ranges, date: Date, timezone,
+  opts  { lines: ["{weather}"], ranges, date: Date, timezone,
           footer: "text at the bottom right" }
 */
 export function poster(W, opts) {
@@ -28,7 +29,9 @@ export function poster(W, opts) {
   const doy = Math.round((Date.UTC(y, m - 1, d) - Date.UTC(y, 0, 0)) / 864e5);
   const dateStr = now.toLocaleDateString("en-GB", { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-  let lines = (opts.lines || []).map((l) => clean(l).trim()).filter(Boolean);
+  // "{weather}" in a line is replaced by the word for the current weather
+  const word = wordFor(W, ymd);
+  let lines = (opts.lines || []).map((l) => clean(l.replaceAll("{weather}", word)).trim()).filter(Boolean);
   if (!lines.length) lines = ["Brussels"];
 
   const main = block("m", lines, { x: 70, y: 150, w: 860, h: 640 }, S, ink, null, "weather");
