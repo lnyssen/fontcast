@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T11:10:42.739Z",
+  "generatedAt": "2026-11-14T11:17:52.196Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -9,16 +9,16 @@
   "weather": {
     "source": "Open-Meteo",
     "attribution": "Weather data by Open-Meteo.com (CC BY 4.0)",
-    "measuredAt": "2026-11-14T11:00:00.000Z",
-    "fetchedAt": "2026-11-14T11:10:42.739Z",
+    "measuredAt": "2026-11-14T11:15:00.000Z",
+    "fetchedAt": "2026-11-14T11:17:52.196Z",
     "values": {
-      "temperature_2m": 7.4,
-      "relative_humidity_2m": 66,
+      "temperature_2m": 7.6,
+      "relative_humidity_2m": 65,
       "precipitation": 0,
       "wind_speed_10m": 6.5,
-      "wind_direction_10m": 201,
-      "cloud_cover": 41,
-      "pressure_msl": 1019.7,
+      "wind_direction_10m": 204,
+      "cloud_cover": 55,
+      "pressure_msl": 1019.6,
       "is_day": 1
     },
     "units": {
@@ -41,7 +41,7 @@
     "pm2_5": 9.427,
     "unit": "µg/m³",
     "measuredAt": "2026-11-14T10:00:00.000Z",
-    "fetchedAt": "2026-11-14T11:10:42.739Z"
+    "fetchedAt": "2026-11-14T11:17:52.196Z"
   },
   "problems": []
 }
