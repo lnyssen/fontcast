@@ -12,8 +12,12 @@
   html, body { margin:0; min-height:100%; background:var(--bg); color:var(--txt); font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:13px; }
 
   /* Live mode: just the poster, as large as the screen allows */
-  .live { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
-  .live #poster { width:100%; max-width:min(900px, calc((100vh - 48px) / 1.414)); }
+  .live { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px 16px; }
+  .live #poster { width:100%; max-width:min(900px, calc((100vh - 96px) / 1.414)); }
+  /* Links under the poster */
+  .live nav { display:flex; gap:24px; letter-spacing:.12em; text-transform:uppercase; font-size:11px; }
+  .live nav a { color:var(--mute); text-decoration:none; }
+  .live nav a:hover, .live nav a:focus-visible { color:var(--txt); text-decoration:underline; }
   #poster svg { width:100%; height:auto; display:block; box-shadow:0 20px 60px rgba(0,0,0,.45); }
 
   /* Simulate mode (?simulate): the prototype's control panel */
@@ -64,13 +68,14 @@ async function loadData() {
 
 // ================= LIVE MODE =================
 async function live() {
-  $("#root").innerHTML = `<div class="live"><div id="poster"></div></div>`;
+  $("#root").innerHTML = `<div class="live"><div id="poster"></div>` +
+    `<nav><a href="archive.html">Archive</a><a href="debug.html">Data</a></nav></div>`;
   let data = await loadData();
   const draw = () => {
     const now = new Date();
     const W = data ? weatherFrom(data, now, tz) : { ...PRESETS[0].v, hour: hourIn(now, tz), sunrise: 8, sunset: 16.8 };
     const footer = data ? footerFrom(data, now, tz, config.staleAfterHours) : "no live data yet";
-    $("#poster").innerHTML = poster(W, { lines: config.text, ranges: config.ranges, date: now, timezone: tz, footer });
+    $("#poster").innerHTML = poster(W, { lines: config.text, ranges: config.ranges, firstDay: config.firstDay, date: now, timezone: tz, footer });
   };
   draw();
   setInterval(draw, 60 * 1000);                                         // the sky moves with the clock
@@ -128,7 +133,7 @@ async function sim() {
 
   const render = () => {
     $("#poster").innerHTML = poster(P, {
-      lines: $("#txt").value.split(/\n/), ranges: config.ranges, date: new Date(), timezone: tz, footer: "simulated weather",
+      lines: $("#txt").value.split(/\n/), ranges: config.ranges, firstDay: config.firstDay, date: new Date(), timezone: tz, footer: "simulated weather",
     });
   };
   const ctl = $("#controls");

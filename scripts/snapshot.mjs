@@ -49,7 +49,7 @@ const data = JSON.parse(await readFile(new URL("data/latest.json", root), "utf8"
 const W = { ...weatherFrom(data, now, tz), hour: 12 };
 const svg = poster(W, {
   lines: config.text,
-  ranges: config.ranges,
+  ranges: config.ranges, firstDay: config.firstDay,
   date: now,
   timezone: tz,
   footer: footerFrom(data, now, tz, config.staleAfterHours),
