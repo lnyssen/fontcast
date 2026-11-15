@@ -23,12 +23,19 @@
   ul { padding-left: 18px; margin: 6px 0; }
   a { color: inherit; }
   code { color: var(--mute); }
+  /* Site links, same style as the home page: back home + the other pages */
+  nav.site { display:flex; gap:24px; flex-wrap:wrap; letter-spacing:.12em; text-transform:uppercase; font-size:11px; line-height:1.5; }
+  nav.site a { color:var(--mute); text-decoration:none; }
+  nav.site a:hover, nav.site a:focus-visible { color:var(--txt); text-decoration:underline; }
+  nav.site [aria-current] { color:var(--txt); }
+  nav.site { margin-bottom:28px; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Fontcast · data check</h1>
-  <p class="mute">Raw values read from <code>data/latest.json</code>, refreshed every hour. Times are Brussels time. · <a href="./">live poster</a> · <a href="archive.html">archive</a></p>
+  <nav class="site" aria-label="Site"><a href="./">← Home</a><a href="archive.html">Archive</a><span aria-current="page">Data</span></nav>
+  <h1><a href="./" style="text-decoration:none">Fontcast</a> · data check</h1>
+  <p class="mute">Raw values read from <code>data/latest.json</code>, refreshed every hour. Times are Brussels time.</p>
   <p id="status" style="margin-top:12px">Loading…</p>
 
   <h2>Weather</h2>

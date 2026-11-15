@@ -28,12 +28,18 @@
   dialog img { display:block; max-height:88vh; max-width:94vw; height:auto; }
   dialog p { margin:10px 0 0; display:flex; gap:16px; flex-wrap:wrap; color:var(--txt); }
   dialog button { background:none; border:0; color:inherit; font:inherit; cursor:pointer; padding:0; text-decoration:underline; }
+  /* Site links, same style as the home page: back home + the other pages */
+  nav.site { display:flex; gap:24px; flex-wrap:wrap; letter-spacing:.12em; text-transform:uppercase; font-size:11px; line-height:1.5; }
+  nav.site a { color:var(--mute); text-decoration:none; }
+  nav.site a:hover, nav.site a:focus-visible { color:var(--txt); text-decoration:underline; }
+  nav.site [aria-current] { color:var(--txt); }
 </style>
 </head>
 <body>
 <header>
-  <h1>Fontcast · Archive</h1>
-  <span class="mute">One poster a day, at noon in Brussels · <a href="./">live poster</a></span>
+  <div><h1><a href="./" style="text-decoration:none">Fontcast</a> · Archive</h1>
+  <span class="mute">One poster a day, at noon in Brussels</span></div>
+  <nav class="site" aria-label="Site"><a href="./">← Home</a><span aria-current="page">Archive</span><a href="debug.html">Data</a></nav>
 </header>
 <main id="list"><p class="mute">Loading…</p></main>
 

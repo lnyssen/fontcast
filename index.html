@@ -18,6 +18,11 @@
   .live nav { display:flex; gap:24px; letter-spacing:.12em; text-transform:uppercase; font-size:11px; }
   .live nav a { color:var(--mute); text-decoration:none; }
   .live nav a:hover, .live nav a:focus-visible { color:var(--txt); text-decoration:underline; }
+  /* Site links, same style as the home page: back home + the other pages */
+  nav.site { display:flex; gap:24px; flex-wrap:wrap; letter-spacing:.12em; text-transform:uppercase; font-size:11px; line-height:1.5; }
+  nav.site a { color:var(--mute); text-decoration:none; }
+  nav.site a:hover, nav.site a:focus-visible { color:var(--txt); text-decoration:underline; }
+  nav.site [aria-current] { color:var(--txt); }
   #poster svg { width:100%; height:auto; display:block; box-shadow:0 20px 60px rgba(0,0,0,.45); }
 
   /* Simulate mode (?simulate): the prototype's control panel */
@@ -108,7 +113,8 @@ async function sim() {
   $("#root").innerHTML = `<div class="app">
   <aside>
     <div><h1>Fontcast · simulate</h1>
-      <p class="sub">Test any weather. <a href="./" style="color:inherit">Back to the live poster</a>.</p></div>
+      <p class="sub">Test any weather.</p>
+      <nav class="site" style="margin-top:12px" aria-label="Site"><a href="./">← Home</a><a href="archive.html">Archive</a><a href="debug.html">Data</a></nav></div>
     <div class="group"><div class="glabel">Scenarios</div><div class="presets" id="presets"></div></div>
     <div class="group" id="controls"></div>
     <div class="group">
