@@ -64,14 +64,15 @@ const config = {
   text: ["Brussels", "{weather}", "{temp}"],
 
   // Weather ranges: below the first number nothing happens, at the second the effect is full.
+  // Tuned to Brussels weather (2026-11-16), so ordinary days already show a change.
   ranges: {
-    temperature: [-10, 35],   // °C      cold = condensed, hot = extended
-    rain: [0, 8],             // mm/h    heavier weight, drips
-    wind: [0, 80],            // km/h    slant and jitter
-    pm25: [0, 75],            // µg/m³   counters fill up
+    temperature: [-5, 30],    // °C      cold = condensed, hot = extended
+    rain: [0, 3],             // mm/h    heavier weight, drips
+    wind: [0, 50],            // km/h    slant and jitter
+    pm25: [0, 35],            // µg/m³   counters fill up
     cloud: [0, 100],          // %       rounder corners
-    pressure: [1030, 985],    // hPa     high = CAPITALS, middle = Capital first, low = lowercase
-    humidity: [50, 95],       // %       dry = sans serif, humid = serif
+    pressure: [1025, 995],    // hPa     high = CAPITALS, middle = Capital first, low = lowercase
+    humidity: [55, 95],       // %       dry = sans serif, humid = serifs and contrast
   },
 };
 

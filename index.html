@@ -89,14 +89,14 @@ async function live() {
 
 // ================= SIMULATE MODE (?simulate) =================
 const DEFS = [
-  { k: "hour",  lab: "Time of day",  min: 0, max: 23.75, step: .25, fmt: (v) => hhmm(v), hint: "sky colour, day or night" },
-  { k: "temp",  lab: "Temperature",  min: -10, max: 35, step: .5, fmt: (v) => nf(v, 1) + NB + "°C", hint: "cold → condensed, hot → extended; tints the sky" },
-  { k: "hum",   lab: "Humidity",     min: 20, max: 100, step: 1, fmt: (v) => nf(v) + NB + "%", hint: "dry → sans serif, humid → serifs grow" },
-  { k: "rain",  lab: "Rain",         min: 0, max: 8, step: .1, fmt: (v) => nf(v, 1) + NB + "mm", hint: "heavier weight, letters drip, rain on the page" },
+  { k: "hour",  lab: "Time of day",  min: 0, max: 23.75, step: .25, fmt: (v) => hhmm(v), hint: "day or night colours; letters turn hollow at night" },
+  { k: "temp",  lab: "Temperature",  min: -10, max: 35, step: .5, fmt: (v) => nf(v, 1) + NB + "°C", hint: "cold → condensed, hot → extended" },
+  { k: "hum",   lab: "Humidity",     min: 20, max: 100, step: 1, fmt: (v) => nf(v) + NB + "%", hint: "dry → sans serif, humid → serifs and thin horizontals" },
+  { k: "rain",  lab: "Rain",         min: 0, max: 8, step: .1, fmt: (v) => nf(v, 1) + NB + "mm", hint: "heavier weight, letters drip" },
   { k: "wind",  lab: "Wind",         min: 0, max: 90, step: 1, fmt: (v) => nf(v) + NB + "km/h", hint: "slants and shakes the strokes" },
   { k: "dir",   lab: "Wind from",    min: 0, max: 359, step: 1, fmt: (v) => card(v) + " (" + nf(v) + "°)", hint: "sets the direction of the slant and rain" },
-  { k: "pm",    lab: "Fine particles PM2.5", min: 0, max: 75, step: 1, fmt: (v) => nf(v) + NB + "µg/m³", hint: "fills the counters, hazes the page" },
-  { k: "cloud", lab: "Cloud cover",  min: 0, max: 100, step: 1, fmt: (v) => nf(v) + NB + "%", hint: "rounds the corners, greys the sky" },
+  { k: "pm",    lab: "Fine particles PM2.5", min: 0, max: 75, step: 1, fmt: (v) => nf(v) + NB + "µg/m³", hint: "fills the counters" },
+  { k: "cloud", lab: "Cloud cover",  min: 0, max: 100, step: 1, fmt: (v) => nf(v) + NB + "%", hint: "rounds the corners" },
   { k: "pres",  lab: "Air pressure", min: 975, max: 1045, step: 1, fmt: (v) => nf(v) + NB + "hPa", hint: "high → CAPITALS, middle → Capital first, low → lowercase" },
 ];
 const PRESETS = [

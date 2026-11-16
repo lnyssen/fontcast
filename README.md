@@ -28,8 +28,8 @@ If a source fails, the last good values are kept and the problem is noted in the
 | File | Role |
 |---|---|
 | `src/glyphs.js` | Letter skeletons |
-| `src/letters.js` | Weather → letterforms (width, weight, slant, counters, corners, case, serifs) |
-| `src/sky.js` | Weather → one flat background colour and the ink colour |
+| `src/letters.js` | Weather → letterforms (width, weight, slant, counters, corners, case, serifs, contrast, hollow at night) |
+| `src/sky.js` | Weather → two colours, paper + ink, chosen by the kind of weather and flipped at night |
 | `src/render.js` | The shared poster function: weather in, SVG out |
 | `src/live.js` | Turns `data/latest.json` into the weather the poster needs |
 
