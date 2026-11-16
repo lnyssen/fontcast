@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T21:52:49.716Z",
+  "generatedAt": "2026-11-16T02:13:09.812Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -38,10 +38,12 @@
     "source": "IRCEL-CELINE",
     "attribution": "Air quality: IRCEL-CELINE (CC BY 4.0)",
     "station": "41REG1 Brussels (Bd du Régent)",
-    "pm2_5": 1.641,
+    "pm2_5": 0.679,
     "unit": "µg/m³",
-    "measuredAt": "2026-11-15T21:00:00.000Z",
-    "fetchedAt": "2026-11-15T21:52:49.716Z"
+    "measuredAt": "2026-11-16T01:00:00.000Z",
+    "fetchedAt": "2026-11-16T02:13:09.812Z"
   },
-  "problems": []
+  "problems": [
+    "Weather: fetch failed (UND_ERR_CONNECT_TIMEOUT), after 3 attempt(s)"
+  ]
 }
