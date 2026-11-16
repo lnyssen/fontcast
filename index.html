@@ -57,6 +57,7 @@
 import config from "./config.js";
 import { poster } from "./src/render.js";
 import { weatherFrom, footerFrom, hourIn } from "./src/live.js";
+import { openMeteo } from "./src/weather.js";
 import { nf, NB, card, hhmm } from "./src/utils.js";
 
 const $ = (s) => document.querySelector(s);
@@ -64,11 +65,29 @@ const tz = config.place.timezone;
 const simulate = new URLSearchParams(location.search).has("simulate");
 
 // Read the latest data. Never throws: returns null if there is none yet.
+// If the weather in it is more than an hour old (GitHub's hourly job is often
+// late, and Open-Meteo sometimes refuses GitHub's machines), ask Open-Meteo
+// directly from this browser. Only this page uses it: the archive keeps the
+// data saved in the repository.
 async function loadData() {
+  let data = null;
   try {
     const res = await fetch("data/latest.json", { cache: "no-store" });
-    return res.ok ? await res.json() : null;
-  } catch { return null; }
+    data = res.ok ? await res.json() : null;
+  } catch {}
+  const age = data?.weather?.fetchedAt ? (Date.now() - new Date(data.weather.fetchedAt)) / 3600000 : Infinity;
+  if (age > 1) {
+    try {
+      const getJSON = async (url) => {
+        const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      };
+      const weather = await openMeteo(config, getJSON);
+      data = { ...(data || {}), weather };
+    } catch { /* keep what we have */ }
+  }
+  return data;
 }
 
 // ================= LIVE MODE =================

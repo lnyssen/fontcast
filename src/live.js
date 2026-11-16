@@ -37,7 +37,7 @@ export function footerFrom(data, now, timezone, staleAfterHours) {
   const times = [data.weather?.fetchedAt, data.air?.fetchedAt].filter(Boolean).sort();
   const oldest = times[0] || data.generatedAt;
   const hours = (now - new Date(oldest)) / 3600000;
-  const sources = ["Open-Meteo", data.air?.source === "IRCEL-CELINE" ? "IRCEL-CELINE" : "CAMS via Open-Meteo"].join(", ");
+  const sources = [data.weather?.source || "Open-Meteo", data.air?.source === "IRCEL-CELINE" ? "IRCEL-CELINE" : "CAMS via Open-Meteo"].join(", ");
   const when = hours > staleAfterHours
     ? `last data ${clock(oldest, timezone)}, not updated since`
     : `updated ${clock(oldest, timezone)}`;
