@@ -57,10 +57,11 @@ const config = {
   // When the poster should say "data is old" (hours since the last good reading).
   staleAfterHours: 3,
 
-  // The main word on the poster, one line per entry (here: one line). The weather decides the case.
-  // "{weather}" is replaced by a word for the current weather (lists in src/words.js).
-  // For a fixed word, write it instead, e.g. ["Brussels"].
-  text: ["{weather}"],
+  // The main text on the poster, one line per entry. The pressure decides the case
+  // of the whole block: CAPITALS (high), Capital first (middle), lowercase (low).
+  // "{weather}" is replaced by a French word for the current weather (lists in src/words.js),
+  // "{temp}" by the temperature, e.g. "10,3°". Anything else is shown as written.
+  text: ["Bruxelles", "{weather}", "{temp}"],
 
   // Weather ranges: below the first number nothing happens, at the second the effect is full.
   ranges: {
@@ -69,7 +70,7 @@ const config = {
     wind: [0, 80],            // km/h    slant and jitter
     pm25: [0, 75],            // µg/m³   counters fill up
     cloud: [0, 100],          // %       rounder corners
-    pressure: [1030, 985],    // hPa     high = capitals, low = lowercase
+    pressure: [1030, 985],    // hPa     high = CAPITALS, middle = Capital first, low = lowercase
     humidity: [50, 95],       // %       dry = sans serif, humid = serif
   },
 };

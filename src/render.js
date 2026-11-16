@@ -15,7 +15,7 @@ import { NB, nf, card, hhmm, esc, clean, readableOpacity } from "./utils.js";
 /*
   W     the weather: { hour, sunrise, sunset (decimal hours, Brussels time),
         temp, rain, wind, dir, pm, cloud, pres, hum }
-  opts  { lines: ["{weather}"], ranges, date: Date, timezone, firstDay: "2026-11-14",
+  opts  { lines: ["Bruxelles", "{weather}", "{temp}"], ranges, date: Date, timezone, firstDay: "2026-11-14",
           footer: "text at the bottom right" }
 */
 export function poster(W, opts) {
@@ -31,9 +31,11 @@ export function poster(W, opts) {
   const no = Math.max(1, Math.round((Date.UTC(y, m - 1, d) - Date.UTC(fy, fm - 1, fd)) / 864e5) + 1);
   const dateStr = now.toLocaleDateString("en-GB", { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-  // "{weather}" in a line is replaced by the word for the current weather
+  // "{weather}" in a line is replaced by the word for the current weather,
+  // "{temp}" by the temperature, French style: "10,3°"
   const word = wordFor(W, ymd);
-  let lines = (opts.lines || []).map((l) => clean(l.replaceAll("{weather}", word)).trim()).filter(Boolean);
+  const temp = W.temp.toFixed(1).replace(".", ",").replace(/^-0,0$/, "0,0") + "°";
+  let lines = (opts.lines || []).map((l) => clean(l.replaceAll("{weather}", word).replaceAll("{temp}", temp)).trim()).filter(Boolean);
   if (!lines.length) lines = ["Brussels"];
 
   const main = block("m", lines, { x: 70, y: 150, w: 860, h: 640 }, S, ink, null, "weather");

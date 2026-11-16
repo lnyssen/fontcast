@@ -8,27 +8,29 @@
   so the word stays the same all day while the weather stays the same, and the
   noon archive gets a little variety over the year.
 
-  To change the words, edit the lists below. Letters, digits and . , : - ' / ! ?
-  are available; anything else is skipped when drawn.
+  The words are in French (the poster speaks the language of the street).
+  To change them, edit the lists below. Letters, digits, spaces and
+  . , : - ' / ! ? ° are available. The letters have no accents yet, so accents
+  are dropped when drawn (é becomes e): prefer words that read well without.
 */
 
 import { rnd } from "./utils.js";
 
 const WORDS = {
-  downpour: ["Downpour", "Deluge", "Torrent"],
-  rain: ["Rain", "Showers", "Wet"],
-  drizzle: ["Drizzle", "Mizzle", "Damp"],
-  gale: ["Gale", "Storm"],
-  wind: ["Gust", "Blustery", "Windy"],
-  haze: ["Haze", "Smog", "Murk"],
-  frost: ["Frost", "Freeze", "Ice"],
-  cold: ["Chilly", "Nippy", "Cold"],
-  heat: ["Heat", "Swelter", "Scorch"],
-  fog: ["Fog", "Mist"],
-  overcast: ["Overcast", "Grey", "Leaden"],
-  clouds: ["Cloudy", "Patchy", "Mixed"],
-  clearDay: ["Sunny", "Clear", "Bright"],
-  clearNight: ["Clear", "Starry", "Still"],
+  downpour: ["Drache", "Trombes", "Cataracte"],   // "il drache": Brussels for pouring rain
+  rain: ["Pluie", "Averses", "Pluvieux"],
+  drizzle: ["Crachin", "Bruine", "Humide"],
+  gale: ["Bourrasque", "Rafales"],
+  wind: ["Vent", "Venteux", "Souffle"],
+  haze: ["Smog", "Air lourd", "Pollution"],
+  frost: ["Gel", "Givre", "Glace"],
+  cold: ["Frisquet", "Froid", "Frileux"],
+  heat: ["Canicule", "Chaleur", "Fournaise"],
+  fog: ["Brouillard", "Brume"],
+  overcast: ["Grisaille", "Gris", "Couvert"],
+  clouds: ["Nuageux", "Nuages", "Variable"],
+  clearDay: ["Soleil", "Clair", "Radieux"],
+  clearNight: ["Ciel clair", "Nuit claire", "Calme"],
 };
 
 // W: the same weather object as poster(). ymd: "2026-11-14" (Brussels date)
