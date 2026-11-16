@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-16T08:29:32.834Z",
+  "generatedAt": "2026-11-16T09:51:28.254Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -9,16 +9,16 @@
   "weather": {
     "source": "Open-Meteo",
     "attribution": "Weather data by Open-Meteo.com (CC BY 4.0)",
-    "measuredAt": "2026-11-16T08:15:00.000Z",
-    "fetchedAt": "2026-11-16T08:29:32.834Z",
+    "measuredAt": "2026-11-16T09:45:00.000Z",
+    "fetchedAt": "2026-11-16T09:51:28.254Z",
     "values": {
-      "temperature_2m": 8.1,
-      "relative_humidity_2m": 84,
+      "temperature_2m": 7.9,
+      "relative_humidity_2m": 80,
       "precipitation": 0,
-      "wind_speed_10m": 22,
-      "wind_direction_10m": 243,
+      "wind_speed_10m": 18.7,
+      "wind_direction_10m": 252,
       "cloud_cover": 100,
-      "pressure_msl": 1004.7,
+      "pressure_msl": 1005.6,
       "is_day": 1
     },
     "units": {
@@ -38,10 +38,10 @@
     "source": "IRCEL-CELINE",
     "attribution": "Air quality: IRCEL-CELINE (CC BY 4.0)",
     "station": "41REG1 Brussels (Bd du Régent)",
-    "pm2_5": 7.778,
+    "pm2_5": 7.458,
     "unit": "µg/m³",
-    "measuredAt": "2026-11-16T08:00:00.000Z",
-    "fetchedAt": "2026-11-16T08:29:32.834Z"
+    "measuredAt": "2026-11-16T09:00:00.000Z",
+    "fetchedAt": "2026-11-16T09:51:28.254Z"
   },
   "problems": []
 }
