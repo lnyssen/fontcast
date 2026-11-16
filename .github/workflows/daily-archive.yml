@@ -1,6 +1,7 @@
 # Every day at noon (Brussels time): freeze the poster into archive/YYYY/.
-# GitHub's clock is UTC, so it starts at 10:30 and 11:30 UTC; the script only
-# works on the run that is 12:30 in Brussels (summer or winter time).
+# GitHub's clock is UTC and its scheduled runs are often hours late or skipped,
+# so it starts every hour from 10:30 to 22:30 UTC; the first run at or after
+# noon in Brussels archives the day, the later ones find it done and stop.
 # On any other branch it is a test run: it forces a snapshot, nothing is saved,
 # and the PNG can be downloaded from the run page ("Artifacts").
 
@@ -8,8 +9,7 @@ name: Daily archive
 
 on:
   schedule:
-    - cron: "30 10 * * *"
-    - cron: "30 11 * * *"
+    - cron: "30 10-22 * * *"
   workflow_dispatch:
     inputs:
       force:
@@ -37,17 +37,37 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      # Today already archived (or still morning in Brussels)? Then stop here,
+      # without fetching or saving anything.
+      - name: Anything to do?
+        id: todo
+        run: |
+          day=$(TZ=Europe/Brussels date +%F); hour=$(TZ=Europe/Brussels date +%-H)
+          if [ "${{ github.ref }}" != "refs/heads/main" ] || [ "${{ inputs.force }}" = "true" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          elif [ -f "archive/${day:0:4}/$day.svg" ]; then
+            echo "$day is already archived."; echo "go=false" >> "$GITHUB_OUTPUT"
+          elif [ "$hour" -lt 12 ]; then
+            echo "It is ${hour}h in Brussels, before noon."; echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-node@v4
+        if: steps.todo.outputs.go == 'true'
         with:
           node-version: 22
 
       - name: Install the PNG converter
+        if: steps.todo.outputs.go == 'true'
         run: npm ci
 
       - name: Fresh data
+        if: steps.todo.outputs.go == 'true'
         run: node scripts/fetch-data.mjs
 
       - name: Snapshot
+        if: steps.todo.outputs.go == 'true'
         run: |
           if [ "${{ github.ref }}" != "refs/heads/main" ] || [ "${{ inputs.force }}" = "true" ]; then
             node scripts/snapshot.mjs --force
@@ -63,7 +83,7 @@ jobs:
           path: archive/
 
       - name: Save (main branch only)
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.todo.outputs.go == 'true'
         run: |
           git config user.name "fontcast-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

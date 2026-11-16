@@ -7,8 +7,10 @@
     archive/YYYY/YYYY-MM-DD.json  the exact data used
   and refresh archive/index.json, the list read by archive.html.
 
-  GitHub starts it at 10:30 and 11:30 UTC; only the run that falls on
-  12:30 in Brussels does the work, so summer and winter time both work.
+  GitHub starts it every hour from 10:30 to 22:30 UTC. The first run that
+  falls at or after 12:00 in Brussels does the work; the others see that the
+  day is already archived and stop. GitHub often starts scheduled runs hours
+  late (or skips them), so a late run still catches up the same day.
 
   Run it yourself:  node scripts/snapshot.mjs --force
   (--force: ignore the clock and overwrite today's files)
@@ -29,10 +31,10 @@ const now = new Date();
 const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
 const year = ymd.slice(0, 4);
 
-// 1. Is it noon in Brussels?
+// 1. Is it noon (or later) in Brussels?
 const hour = Math.floor(hourIn(now, tz));
-if (!force && hour !== 12) {
-  console.log(`It is ${hour}h in Brussels, not noon: nothing to do.`);
+if (!force && hour < 12) {
+  console.log(`It is ${hour}h in Brussels, before noon: nothing to do.`);
   process.exit(0);
 }
 
