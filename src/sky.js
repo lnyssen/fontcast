@@ -1,58 +1,63 @@
 /*
-  FONTCAST · weather → background
-  -------------------------------
-  sky()         one flat background colour and the ink colour, for the current
-                hour and weather (time of day, clouds, temperature, rain, pollution).
-  background()  that colour as a plain SVG rectangle. No sun, no clouds, no
+  FONTCAST · weather → colours ("ink pairs")
+  ------------------------------------------
+  sky()         the paper (one flat background colour) and the ink.
+  background()  the paper as a plain SVG rectangle. No sun, no clouds, no
                 gradient: the weather lives in the colour and in the letters.
+
+  Each kind of weather (the same conditions as the main word, src/words.js)
+  is printed with its own two colours, like a two-colour poster:
+  sunny = yellow + blue, rain = blue + white, heat = orange + cream…
+  At night the pair turns over: the darker colour becomes the paper (deepened),
+  the lighter one the ink. Around sunrise and sunset it slides between the two.
+  The ink always keeps at least a 4.5:1 contrast with the paper (WCAG AA).
 */
 
-import { clamp, mix, grey, contrast } from "./utils.js";
+import { clamp, mix, contrast, lum } from "./utils.js";
+import { conditionFor } from "./words.js";
 
-// Sky keyframes: [top colour, bottom colour]
-const K = {
-  night: ["#0b1222", "#18233a"],
-  dawn: ["#2c3c63", "#e7a47a"],
-  day: ["#7fb0dc", "#e3edf5"],
-  dusk: ["#27345a", "#dc8a63"],
+// condition: [paper, ink] by day. Edit freely: contrast is fixed automatically.
+export const PAIRS = {
+  clearDay: ["#ffd23f", "#1b3fb5"],
+  clearNight: ["#0f1a52", "#ffd23f"],
+  clouds: ["#bcd7ee", "#c2302a"],
+  overcast: ["#cfcac0", "#2a3a8c"],
+  fog: ["#ebe7df", "#5a5f6b"],
+  drizzle: ["#a9d3cf", "#0f3d4a"],
+  rain: ["#2f62c8", "#e8f1ff"],
+  downpour: ["#0d2457", "#6fd6ff"],
+  wind: ["#f2f5f7", "#e2462b"],
+  gale: ["#e2462b", "#141414"],
+  haze: ["#d1ad6e", "#3d2a12"],
+  frost: ["#e4f2ff", "#2f55d4"],
+  cold: ["#a6dbea", "#14305c"],
+  heat: ["#ff5a36", "#fff3cf"],
 };
+
+// 0 at night → 1 in full day, with a smooth passage around sunrise and sunset
+function daylight(W) {
+  const h = W.hour, r = W.sunrise, s = W.sunset;
+  if (h < r - 1 || h > s + 1.2) return 0;
+  if (h < r + 0.5) return clamp((h - (r - 1)) / 1.5, 0, 1);
+  if (h > s - 0.5) return clamp(1 - (h - (s - 0.5)) / 1.7, 0, 1);
+  return 1;
+}
+
+// The night version of a pair: dark colour as paper (deepened), light colour as ink
+function nightPair([a, b]) {
+  const [dk, lt] = lum(a) < lum(b) ? [a, b] : [b, a];
+  return [mix(dk, "#05070f", 0.55), lt];
+}
 
 // W.hour, W.sunrise and W.sunset are decimal hours in Brussels time (13.5 = 13:30)
 export function sky(W) {
-  const h = W.hour, r = W.sunrise, s = W.sunset;
-  const seg = (a, b, t) => [mix(K[a][0], K[b][0], t), mix(K[a][1], K[b][1], t)];
-  let top, bot;
-  if (h < r - 1 || h > s + 1.2) [top, bot] = K.night;
-  else if (h < r) [top, bot] = seg("night", "dawn", h - (r - 1));
-  else if (h < r + 1.2) [top, bot] = seg("dawn", "day", (h - r) / 1.2);
-  else if (h < s - 1) [top, bot] = K.day;
-  else if (h < s) [top, bot] = seg("day", "dusk", h - (s - 1));
-  else [top, bot] = seg("dusk", "night", (h - s) / 1.2);
-
-  // clouds grey the sky
-  const c = W.cloud / 100;
-  top = mix(top, grey(top), c * 0.85); bot = mix(bot, grey(bot), c * 0.85);
-  // temperature tint: cool blue or warm amber
-  const tT = clamp((W.temp - 12) / 20, -1, 1);
-  const tint = tT < 0 ? "#a9c8ea" : "#f2c27c", ta = Math.abs(tT) * 0.18;
-  top = mix(top, tint, ta); bot = mix(bot, tint, ta * 1.2);
-  // rain darkens
-  const wet = clamp(W.rain / 8, 0, 1) * 0.28;
-  top = mix(top, "#0e1116", wet); bot = mix(bot, "#0e1116", wet * 0.8);
-
-  // One flat colour: a blend of the two sky colours
-  let bg = mix(top, bot, 0.55);
-  // pollution: a brownish haze over the colour
-  const pz = clamp(W.pm / 75, 0, 1);
-  bg = mix(bg, "#9c8a66", pz * 0.38);
-
-  // Ink: dark or light, whichever contrasts more with the background (WCAG ratio).
-  // Mid greys can fall short of 4.5:1 with both inks: then the background is
-  // nudged, a few percent at a time, away from the ink until it reads.
-  const dark = "#141414", light = "#f1eee6";
-  const ink = contrast(bg, dark) >= contrast(bg, light) ? dark : light;
-  for (let i = 0; i < 30 && contrast(bg, ink) < 4.5; i++) bg = mix(bg, ink === dark ? "#ffffff" : "#000000", 0.03);
-  return { bg, ink, contrast: contrast(bg, ink), night: ink === light, isDay: h >= r && h <= s };
+  const cond = conditionFor(W), day = PAIRS[cond], d = daylight(W);
+  const night = cond === "clearNight" ? day : nightPair(day);
+  let bg = mix(night[0], day[0], d), ink = mix(night[1], day[1], d);
+  // Keep the ink readable: push it toward black or white until it reaches 4.5:1
+  const toward = contrast(bg, "#000000") > contrast(bg, "#ffffff") ? "#000000" : "#ffffff";
+  for (let i = 0; i < 40 && contrast(bg, ink) < 4.5; i++) ink = mix(ink, toward, 0.05);
+  return { bg, ink, contrast: contrast(bg, ink), night: d < 0.5, isDay: W.hour >= W.sunrise && W.hour <= W.sunset, condition: cond };
 }
 
 export function background(W, Ky) {

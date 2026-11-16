@@ -38,8 +38,8 @@ export function poster(W, opts) {
   let lines = (opts.lines || []).map((l) => clean(l.replaceAll("{weather}", word).replaceAll("{temp}", temp)).trim()).filter(Boolean);
   if (!lines.length) lines = ["Brussels"];
 
-  const main = block("m", lines, { x: 70, y: 150, w: 860, h: 640 }, S, ink, null, "weather");
-  const spec = block("s", ["ABCDEFGHIJKLM", "nopqrstuvwxyz", "0123456789"], { x: 70, y: 880, w: 860, h: 330 }, S, ink, Math.min(main.u * 0.55, 48), "fixed");
+  const main = block("m", lines, { x: 70, y: 150, w: 860, h: 640 }, S, ink, null, "weather", K.bg);
+  const spec = block("s", ["ABCDEFGHIJKLM", "nopqrstuvwxyz", "0123456789"], { x: 70, y: 880, w: 860, h: 330 }, S, ink, Math.min(main.u * 0.55, 48), "fixed", K.bg);
 
   // Secondary text is a little faded, but never below a 4.5:1 contrast (WCAG AA)
   const faded = readableOpacity(ink, K.bg, 0.65);
