@@ -36,7 +36,7 @@ jobs:
           node-version: 22
 
       - name: Fetch weather and air quality
-        run: node scripts/fetch-data.mjs --met   # TEMP test
+        run: node scripts/fetch-data.mjs
 
       - name: Save the new data (main branch only)
         if: github.ref == 'refs/heads/main'

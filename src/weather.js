@@ -72,8 +72,8 @@ export async function metNorway(config, getJSON, now = new Date()) {
   const fc = await getJSON(`https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`);
   const series = fc.properties?.timeseries;
   if (!series?.length) throw new Error("MET Norway returned no timeseries");
-  // the step closest to now (steps are hourly near the start)
-  const step = series.reduce((a, b) => (Math.abs(new Date(b.time) - now) < Math.abs(new Date(a.time) - now) ? b : a));
+  // the latest step that has started (steps are hourly near the start)
+  const step = series.filter((s) => new Date(s.time) <= now).pop() || series[0];
   const d = step.data?.instant?.details || {};
   const rain = step.data?.next_1_hours?.details?.precipitation_amount ?? 0;
 
