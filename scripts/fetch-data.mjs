@@ -9,6 +9,7 @@
   last good values for that source and note the problem in the file.
 
   Run it yourself with:  node scripts/fetch-data.mjs
+  (add --met to skip Open-Meteo and test the MET Norway fallback)
   It needs Node 18 or newer and no extra packages.
 */
 
@@ -60,6 +61,8 @@ function localToUTC(local, offsetSeconds) {
 
 async function fetchWeather() {
   try {
+    // --met: skip Open-Meteo, to test the fallback
+    if (process.argv.includes("--met")) throw new Error("skipped (--met)");
     return await openMeteo(config, getJSON, now);
   } catch (err) {
     problems.push(`Open-Meteo unavailable, used MET Norway: ${err.message}`);
