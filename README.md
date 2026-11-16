@@ -32,6 +32,7 @@ If a source fails, the last good values are kept and the problem is noted in the
 | `src/sky.js` | Weather → two colours, paper + ink, chosen by the kind of weather and flipped at night |
 | `src/render.js` | The shared poster function: weather in, SVG out |
 | `src/live.js` | Turns `data/latest.json` into the weather the poster needs |
+| `src/weather.js` | Weather sources: Open-Meteo, and MET Norway when Open-Meteo refuses GitHub (daily quota) |
 
 ## Settings
 

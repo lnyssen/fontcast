@@ -1,7 +1,7 @@
 /*
   FONTCAST · hourly data job
   --------------------------
-  Fetches the Brussels weather (Open-Meteo) and fine particles PM2.5
+  Fetches the Brussels weather (Open-Meteo, or MET Norway as a fallback) and fine particles PM2.5
   (IRCEL-CELINE, or Open-Meteo/CAMS as a fallback), then writes
   data/latest.json for the web pages to read.
 
@@ -9,11 +9,13 @@
   last good values for that source and note the problem in the file.
 
   Run it yourself with:  node scripts/fetch-data.mjs
+  (add --met to skip Open-Meteo and test the MET Norway fallback)
   It needs Node 18 or newer and no extra packages.
 */
 
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import config from "../config.js";
+import { openMeteo, metNorway } from "../src/weather.js";
 
 const OUT = new URL("../data/latest.json", import.meta.url);
 const now = new Date();
@@ -54,40 +56,18 @@ function localToUTC(local, offsetSeconds) {
 }
 
 // ---------- 1. weather ----------
+// Open-Meteo first. GitHub's machines are shared, and Open-Meteo sometimes
+// refuses them for the rest of the day (HTTP 429, daily limit): then MET Norway.
 
 async function fetchWeather() {
-  const { url, current, daily, attribution } = config.weather;
-  const { latitude, longitude, timezone } = config.place;
-  const params = new URLSearchParams({
-    latitude, longitude, timezone,
-    current: current.join(","),
-    daily: daily.join(","),
-    forecast_days: "1",
-  });
-  const data = await getJSON(`${url}?${params}`);
-
-  // Check that every value we asked for really came back as a number.
-  const values = {};
-  for (const name of current) {
-    const v = data.current?.[name];
-    if (!isNumber(v)) throw new Error(`Open-Meteo did not return "${name}" (got ${JSON.stringify(v)})`);
-    values[name] = v;
+  try {
+    // --met: skip Open-Meteo, to test the fallback
+    if (process.argv.includes("--met")) throw new Error("skipped (--met)");
+    return await openMeteo(config, getJSON, now);
+  } catch (err) {
+    problems.push(`Open-Meteo unavailable, used MET Norway: ${err.message}`);
+    return await metNorway(config, getJSON, now);
   }
-  const sunrise = data.daily?.sunrise?.[0];
-  const sunset = data.daily?.sunset?.[0];
-  if (!sunrise || !sunset) throw new Error("Open-Meteo did not return sunrise/sunset");
-
-  const offset = data.utc_offset_seconds ?? 0;
-  return {
-    source: "Open-Meteo",
-    attribution,
-    measuredAt: localToUTC(data.current.time, offset),
-    fetchedAt: now.toISOString(),
-    values,
-    units: Object.fromEntries(current.map((n) => [n, data.current_units?.[n] ?? ""])),
-    sunrise: localToUTC(sunrise, offset),
-    sunset: localToUTC(sunset, offset),
-  };
 }
 
 // ---------- 2. air quality ----------
