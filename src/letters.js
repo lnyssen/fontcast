@@ -21,7 +21,7 @@ export function style(W, R) {
     jit: Math.pow(windN, 1.4) * 0.42,                          // shake
     fill: Math.pow(norm(W.pm, ...R.pm25), 0.85),               // filled counters
     rad: lerp(0, 1.1, norm(W.cloud, ...R.cloud)),              // rounded corners
-    lower: norm(W.pres, ...R.pressure),                        // share of lowercase
+    lower: norm(W.pres, ...R.pressure),                        // 0 = CAPITALS, 1 = lowercase
     serif: Math.pow(norm(W.hum, ...R.humidity), 1.2),          // serif length (0 = sans)
     drips: W.rain,
   };
@@ -67,12 +67,12 @@ function serifsFor(ch) {
 
 export function block(id, lines, box, S, ink, maxU, caseMode) {
   const trk = 1.15 + S.wg + S.serif * 0.9; // letter spacing grows with the serifs
-  // Weather decides the case of each letter: each position has a fixed
-  // threshold, so letters flip one by one as the pressure falls.
-  const L = lines.map((line, li) => [...line].map((ch, ci) => {
-    if (caseMode !== "weather" || !/[A-Za-z]/.test(ch)) return ch;
-    return rnd("case|" + li + "|" + ci) < S.lower ? ch.toLowerCase() : ch.toUpperCase();
-  }));
+  // Weather decides the case of the whole block, never letter by letter:
+  // high pressure = CAPITALS, middle = Capital first, low = lowercase.
+  const caseOf = (line) => S.lower < 1 / 3 ? line.toUpperCase()
+    : S.lower < 2 / 3 ? line.toLowerCase().replace(/(^|\s)([a-z])/g, (m, a, b) => a + b.toUpperCase())
+    : line.toLowerCase();
+  const L = lines.map((line) => [...(caseMode === "weather" ? caseOf(line) : line)]);
   const desc = L.map((l) => l.some((ch) => "gjpqy,".includes(ch)));
   const W = L.map((l) => {
     let w = 0;

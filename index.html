@@ -97,7 +97,7 @@ const DEFS = [
   { k: "dir",   lab: "Wind from",    min: 0, max: 359, step: 1, fmt: (v) => card(v) + " (" + nf(v) + "°)", hint: "sets the direction of the slant and rain" },
   { k: "pm",    lab: "Fine particles PM2.5", min: 0, max: 75, step: 1, fmt: (v) => nf(v) + NB + "µg/m³", hint: "fills the counters, hazes the page" },
   { k: "cloud", lab: "Cloud cover",  min: 0, max: 100, step: 1, fmt: (v) => nf(v) + NB + "%", hint: "rounds the corners, greys the sky" },
-  { k: "pres",  lab: "Air pressure", min: 975, max: 1045, step: 1, fmt: (v) => nf(v) + NB + "hPa", hint: "high → capitals stand tall, low → letters sink to lowercase" },
+  { k: "pres",  lab: "Air pressure", min: 975, max: 1045, step: 1, fmt: (v) => nf(v) + NB + "hPa", hint: "high → CAPITALS, middle → Capital first, low → lowercase" },
 ];
 const PRESETS = [
   { n: "November grey",  v: { temp: 8,  hum: 88, rain: .6, wind: 22, dir: 225, pm: 12, cloud: 90,  pres: 1012, hour: 15 } },
