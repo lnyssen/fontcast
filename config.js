@@ -59,9 +59,9 @@ const config = {
 
   // The main text on the poster, one line per entry. The pressure decides the case
   // of the whole block: CAPITALS (high), Capital first (middle), lowercase (low).
-  // "{weather}" is replaced by a French word for the current weather (lists in src/words.js),
-  // "{temp}" by the temperature, e.g. "10,3°". Anything else is shown as written.
-  text: ["Bruxelles", "{weather}", "{temp}"],
+  // "{weather}" is replaced by a word for the current weather (lists in src/words.js),
+  // "{temp}" by the temperature, e.g. "10.3°". Anything else is shown as written.
+  text: ["Brussels", "{weather}", "{temp}"],
 
   // Weather ranges: below the first number nothing happens, at the second the effect is full.
   ranges: {
