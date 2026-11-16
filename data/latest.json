@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-16T12:49:51.324Z",
+  "generatedAt": "2026-11-16T14:30:58.372Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -38,12 +38,12 @@
     "source": "IRCEL-CELINE",
     "attribution": "Air quality: IRCEL-CELINE (CC BY 4.0)",
     "station": "41REG1 Brussels (Bd du Régent)",
-    "pm2_5": 2.237,
+    "pm2_5": 3.382,
     "unit": "µg/m³",
-    "measuredAt": "2026-11-16T12:00:00.000Z",
-    "fetchedAt": "2026-11-16T12:49:51.324Z"
+    "measuredAt": "2026-11-16T14:00:00.000Z",
+    "fetchedAt": "2026-11-16T14:30:58.372Z"
   },
   "problems": [
-    "Weather: fetch failed (UND_ERR_CONNECT_TIMEOUT), after 3 attempt(s)"
+    "Weather: HTTP 429: {\"reason\":\"Daily API request limit exceeded. Please try again tomorrow.\",\"error\":true}, after 3 attempt(s)"
   ]
 }
