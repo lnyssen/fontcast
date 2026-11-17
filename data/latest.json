@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T13:33:43.108Z",
+  "generatedAt": "2026-11-17T19:18:21.997Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -7,19 +7,19 @@
     "timezone": "Europe/Brussels"
   },
   "weather": {
-    "source": "MET Norway",
-    "attribution": "Weather data by MET Norway (CC BY 4.0)",
-    "measuredAt": "2026-11-17T13:00:00.000Z",
-    "fetchedAt": "2026-11-17T13:33:43.108Z",
+    "source": "Open-Meteo",
+    "attribution": "Weather data by Open-Meteo.com (CC BY 4.0)",
+    "measuredAt": "2026-11-17T19:15:00.000Z",
+    "fetchedAt": "2026-11-17T19:18:21.997Z",
     "values": {
-      "temperature_2m": 13.9,
-      "relative_humidity_2m": 73.1,
-      "precipitation": 0,
-      "wind_speed_10m": 32.8,
-      "wind_direction_10m": 234.2,
-      "cloud_cover": 24.2,
-      "pressure_msl": 984,
-      "is_day": 1
+      "temperature_2m": 11.3,
+      "relative_humidity_2m": 90,
+      "precipitation": 0.3,
+      "wind_speed_10m": 21.6,
+      "wind_direction_10m": 221,
+      "cloud_cover": 100,
+      "pressure_msl": 981.7,
+      "is_day": 0
     },
     "units": {
       "temperature_2m": "°C",
@@ -38,12 +38,10 @@
     "source": "IRCEL-CELINE",
     "attribution": "Air quality: IRCEL-CELINE (CC BY 4.0)",
     "station": "41REG1 Brussels (Bd du Régent)",
-    "pm2_5": 8.191,
+    "pm2_5": 3.84,
     "unit": "µg/m³",
-    "measuredAt": "2026-11-17T13:00:00.000Z",
-    "fetchedAt": "2026-11-17T13:33:43.108Z"
+    "measuredAt": "2026-11-17T18:00:00.000Z",
+    "fetchedAt": "2026-11-17T19:18:21.997Z"
   },
-  "problems": [
-    "Open-Meteo unavailable, used MET Norway: fetch failed (UND_ERR_CONNECT_TIMEOUT), after 3 attempt(s)"
-  ]
+  "problems": []
 }
