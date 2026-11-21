@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T18:03:49.514Z",
+  "generatedAt": "2026-11-21T23:26:31.028Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -9,16 +9,16 @@
   "weather": {
     "source": "Open-Meteo",
     "attribution": "Weather data by Open-Meteo.com (CC BY 4.0)",
-    "measuredAt": "2026-11-21T18:00:00.000Z",
-    "fetchedAt": "2026-11-21T18:03:49.514Z",
+    "measuredAt": "2026-11-21T23:15:00.000Z",
+    "fetchedAt": "2026-11-21T23:26:31.028Z",
     "values": {
-      "temperature_2m": 5.1,
-      "relative_humidity_2m": 72,
+      "temperature_2m": 2.8,
+      "relative_humidity_2m": 77,
       "precipitation": 0,
-      "wind_speed_10m": 6.5,
-      "wind_direction_10m": 115,
-      "cloud_cover": 0,
-      "pressure_msl": 1018,
+      "wind_speed_10m": 6.1,
+      "wind_direction_10m": 81,
+      "cloud_cover": 89,
+      "pressure_msl": 1015.8,
       "is_day": 0
     },
     "units": {
@@ -31,17 +31,17 @@
       "pressure_msl": "hPa",
       "is_day": ""
     },
-    "sunrise": "2026-11-21T07:07:00.000Z",
-    "sunset": "2026-11-21T15:48:00.000Z"
+    "sunrise": "2026-11-22T07:09:00.000Z",
+    "sunset": "2026-11-22T15:47:00.000Z"
   },
   "air": {
     "source": "IRCEL-CELINE",
     "attribution": "Air quality: IRCEL-CELINE (CC BY 4.0)",
     "station": "41REG1 Brussels (Bd du Régent)",
-    "pm2_5": 4.389,
+    "pm2_5": 7.458,
     "unit": "µg/m³",
-    "measuredAt": "2026-11-21T17:00:00.000Z",
-    "fetchedAt": "2026-11-21T18:03:49.514Z"
+    "measuredAt": "2026-11-21T23:00:00.000Z",
+    "fetchedAt": "2026-11-21T23:26:31.028Z"
   },
   "problems": []
 }
