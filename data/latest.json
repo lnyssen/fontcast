@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-22T21:52:44.152Z",
+  "generatedAt": "2026-11-23T02:52:22.312Z",
   "place": {
     "name": "Brussels",
     "latitude": 50.8467,
@@ -9,16 +9,16 @@
   "weather": {
     "source": "Open-Meteo",
     "attribution": "Weather data by Open-Meteo.com (CC BY 4.0)",
-    "measuredAt": "2026-11-22T21:45:00.000Z",
-    "fetchedAt": "2026-11-22T21:52:44.152Z",
+    "measuredAt": "2026-11-23T02:45:00.000Z",
+    "fetchedAt": "2026-11-23T02:52:22.312Z",
     "values": {
-      "temperature_2m": 3.5,
-      "relative_humidity_2m": 97,
+      "temperature_2m": 2.2,
+      "relative_humidity_2m": 92,
       "precipitation": 0,
       "wind_speed_10m": 11.9,
-      "wind_direction_10m": 66,
+      "wind_direction_10m": 51,
       "cloud_cover": 100,
-      "pressure_msl": 1017.7,
+      "pressure_msl": 1021.1,
       "is_day": 0
     },
     "units": {
@@ -31,17 +31,17 @@
       "pressure_msl": "hPa",
       "is_day": ""
     },
-    "sunrise": "2026-11-22T07:09:00.000Z",
-    "sunset": "2026-11-22T15:47:00.000Z"
+    "sunrise": "2026-11-23T07:11:00.000Z",
+    "sunset": "2026-11-23T15:46:00.000Z"
   },
   "air": {
     "source": "IRCEL-CELINE",
     "attribution": "Air quality: IRCEL-CELINE (CC BY 4.0)",
     "station": "41REG1 Brussels (Bd du Régent)",
-    "pm2_5": 16.572,
+    "pm2_5": 23.534,
     "unit": "µg/m³",
-    "measuredAt": "2026-11-22T21:00:00.000Z",
-    "fetchedAt": "2026-11-22T21:52:44.152Z"
+    "measuredAt": "2026-11-23T02:00:00.000Z",
+    "fetchedAt": "2026-11-23T02:52:22.312Z"
   },
   "problems": []
 }
