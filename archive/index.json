@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-11-28",
+    "svg": "archive/2026/2026-11-28.svg",
+    "png": "archive/2026/2026-11-28.png",
+    "temperature": 2.5,
+    "humidity": 63,
+    "precipitation": 0,
+    "pm25": 23.763
+  },
+  {
     "date": "2026-11-27",
     "svg": "archive/2026/2026-11-27.svg",
     "png": "archive/2026/2026-11-27.png",
